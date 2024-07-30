@@ -42,6 +42,9 @@
             width: 100%;
             bottom: 0;
         }
+        #user-info {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -66,9 +69,35 @@
             <h2>Contact</h2>
             <p>Use this section to provide contact information or a contact form.</p>
         </section>
+        <div id="user-info">
+            <h3>User Information</h3>
+            <p id="user-id">User ID: Not available</p>
+            <p id="user-name">User Name: Not available</p>
+        </div>
     </div>
     <footer>
         <p>&copy; 2024 My GitHub Pages Site</p>
     </footer>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // Replace 'YOUR_LIFF_ID' with your LIFF ID
+        const liffId = "2005949070-Jwp9BQ0r";
+
+        liff.init({ liffId })
+            .then(() => {
+                if (liff.isLoggedIn()) {
+                    return liff.getProfile();
+                } else {
+                    liff.login();
+                }
+            })
+            .then(profile => {
+                document.getElementById('user-id').textContent = `User ID: ${profile.userId}`;
+                document.getElementById('user-name').textContent = `User Name: ${profile.displayName}`;
+            })
+            .catch(err => {
+                console.error('LIFF Initialization failed ', err);
+            });
+    </script>
 </body>
 </html>
