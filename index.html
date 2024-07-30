@@ -45,6 +45,12 @@
         #user-info {
             margin-top: 20px;
         }
+        #profile-picture {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -70,9 +76,9 @@
             <p>Use this section to provide contact information or a contact form.</p>
         </section>
         <div id="user-info">
-            <h3>User Information</h3>
-            <p id="user-id">User ID: Not available</p>
-            <p id="user-name">User Name: Not available</p>
+            <h3>User Profile</h3>
+            <img id="profile-picture" src="" alt="Profile Picture">
+            <p id="user-name">Name: Not available</p>
         </div>
     </div>
     <footer>
@@ -81,7 +87,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         // Replace 'YOUR_LIFF_ID' with your LIFF ID
-        const liffId = "2005949070-Jwp9BQ0r";
+        const liffId = "YOUR_LIFF_ID";
 
         liff.init({ liffId })
             .then(() => {
@@ -92,8 +98,8 @@
                 }
             })
             .then(profile => {
-                document.getElementById('user-id').textContent = `User ID: ${profile.userId}`;
-                document.getElementById('user-name').textContent = `User Name: ${profile.displayName}`;
+                document.getElementById('user-name').textContent = `Name: ${profile.displayName}`;
+                document.getElementById('profile-picture').src = profile.pictureUrl;
             })
             .catch(err => {
                 console.error('LIFF Initialization failed ', err);
