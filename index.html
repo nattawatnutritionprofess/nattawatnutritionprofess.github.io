@@ -91,15 +91,8 @@
             <img id="profile-picture" src="" alt="Profile Picture">
             <h2 id="user-name">Name: Not available</h2>
 
-            <div>
-                <div id="userId"></div>
-                <div id="displayName"></div>
-                <div id="statusMessage"></div>
-                <div id="pictureUrl"></div>
-    
-                <div id="error_json"></div>
-            </div>
-                    
+            <div id="profile_json"></div>
+
         </div>
             
     </div>
@@ -122,11 +115,6 @@
             .then(profile => {
                 const jsonString = JSON.stringify(profile, null, 2); 
                 document.getElementById('profile_json').textContent = jsonString
-                
-                document.getElementById('userId').textContent = profile.userId.toString()
-                document.getElementById('displayName').textContent = profile.displayName.toString()
-                document.getElementById('statusMessage').textContent = profile.statusMessage.toString()
-                document.getElementById('pictureUrl').textContent = profile.pictureUrl.toString()
                 
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
