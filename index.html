@@ -90,6 +90,9 @@
             <img id="profile-picture" src="" alt="Profile Picture">
             <h2 id="user-name">Name: Not available</h2>
         </div>
+        <div id="profile_json">
+            
+        </div>
     </div>
     <footer>
         <p>&copy; 2024 Nutritionprofess</p>
@@ -108,7 +111,7 @@
                 }
             })
             .then(profile => {
-                console.log("profile",profile)
+                document.getElementById('profile_json').textContent = profile.toString()
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
             })
