@@ -108,6 +108,7 @@
                 }
             })
             .then(profile => {
+                console.log("profile",profile)
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
             })
