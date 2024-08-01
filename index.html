@@ -90,9 +90,13 @@
             <img id="profile-picture" src="" alt="Profile Picture">
             <h2 id="user-name">Name: Not available</h2>
         </div>
-        <div id="profile_json">
+        
+        <div id="profile_json"/>
+        <div id="userId"/>
+        <div id="displayName"/>
+        <div id="statusMessage"/>
+        <div id="pictureUrl"/>
             
-        </div>
     </div>
     <footer>
         <p>&copy; 2024 Nutritionprofess</p>
@@ -113,6 +117,12 @@
             .then(profile => {
                 const jsonString = JSON.stringify(profile, null, 2); 
                 document.getElementById('profile_json').textContent = jsonString
+                
+                document.getElementById('userId').textContent = jsonString.userId
+                document.getElementById('displayName').textContent = jsonString.displayName
+                document.getElementById('statusMessage').textContent = jsonString.statusMessage
+                document.getElementById('pictureUrl').textContent = jsonString.pictureUrl
+                
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
             })
