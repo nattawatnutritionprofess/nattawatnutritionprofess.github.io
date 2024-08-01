@@ -141,8 +141,11 @@
                     }
                 })
                 .then(profile => {
-                    const jsonString = JSON.stringify(profile, null, 2);
-                    document.getElementById('profile_json').textContent = jsonString
+                    console.log(profile)
+                    
+                    // const jsonString = JSON.stringify(profile, null, 2);
+                    
+                    // document.getElementById('profile_json').textContent = jsonString
 
                     document.getElementById('userId').textContent = profile.userId.toString()
                     document.getElementById('displayName').textContent = profile.displayName.toString()
