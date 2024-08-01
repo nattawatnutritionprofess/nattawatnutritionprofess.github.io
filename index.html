@@ -117,10 +117,10 @@
                 const jsonString = JSON.stringify(profile, null, 2); 
                 document.getElementById('profile_json').textContent = jsonString
                 
-                document.getElementById('userId').textContent = jsonString.userId
-                document.getElementById('displayName').textContent = jsonString.displayName
-                document.getElementById('statusMessage').textContent = jsonString.statusMessage
-                document.getElementById('pictureUrl').textContent = jsonString.pictureUrl
+                document.getElementById('userId').textContent = profile.userId
+                document.getElementById('displayName').textContent = profile.displayName
+                document.getElementById('statusMessage').textContent = profile.statusMessage
+                document.getElementById('pictureUrl').textContent = profile.pictureUrl
                 
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
