@@ -142,15 +142,15 @@
                 })
                 .then(profile => {
                     console.log(profile)
-                    
+
                     // const jsonString = JSON.stringify(profile, null, 2);
                     
                     // document.getElementById('profile_json').textContent = jsonString
 
-                    document.getElementById('userId').textContent = profile.userId.toString()
-                    document.getElementById('displayName').textContent = profile.displayName.toString()
-                    document.getElementById('statusMessage').textContent = profile.statusMessage.toString()
-                    document.getElementById('pictureUrl').textContent = profile.pictureUrl.toString()
+                    document.getElementById('userId').textContent = 'userId' + profile.userId.toString()
+                    document.getElementById('displayName').textContent = 'displayName' + profile.displayName.toString()
+                    document.getElementById('statusMessage').textContent = 'statusMessage' + profile.statusMessage.toString()
+                    document.getElementById('pictureUrl').textContent = 'statusMessage' + profile.pictureUrl.toString()
 
                     document.getElementById('user-name').textContent = profile.displayName;
                     document.getElementById('profile-picture').src = profile.pictureUrl;
