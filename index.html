@@ -111,7 +111,8 @@
                 }
             })
             .then(profile => {
-                document.getElementById('profile_json').textContent = profile.toString()
+                const jsonString = JSON.stringify(profile, null, 2); 
+                document.getElementById('profile_json').textContent = jsonString
                 document.getElementById('user-name').textContent = profile.displayName;
                 document.getElementById('profile-picture').src = profile.pictureUrl;
             })
