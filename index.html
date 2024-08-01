@@ -90,11 +90,15 @@
             <img id="profile-picture" src="" alt="Profile Picture">
             <h2 id="user-name">Name: Not available</h2>
         </div>
-        
+
+        <div>
         <div id="userId"/>
         <div id="displayName"/>
         <div id="statusMessage"/>
         <div id="pictureUrl"/>
+
+            <div id="error_json"/>
+                </div>
             
     </div>
     <footer>
@@ -127,6 +131,7 @@
             })
             .catch(err => {
                 console.error('LIFF Initialization failed ', err);
+                document.getElementById('error_json').src = JSON.stringify(err, null, 2);
             });
     </script>
 </body>
