@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -163,6 +163,317 @@
             // Inform the user to use the LINE app
             document.getElementById('error_message').textContent = "กรุณาลงชื่อเช้าใช้งานด้วย LINE Application";
         }
+    </script>
+</body>
+
+</html> -->
+
+<!doctype html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>เขย่าเพื่อหมุนวงล้อ</title>
+    <style>
+        :root {
+            --size: 320px;
+            --bg: #fff;
+            --text: #1f2937;
+            --btn: #1f2937;
+            --accent: #e63946;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Thai", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 16px;
+        }
+
+        h2 {
+            margin: .25rem 0 .5rem;
+            font-size: 1.25rem;
+        }
+
+        .pointer {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 18px solid var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .wheel {
+            position: relative;
+            width: var(--size);
+            height: var(--size);
+            border-radius: 50%;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+            will-change: transform;
+            transform: rotate(0deg);
+        }
+
+        .label {
+            position: absolute;
+            width: 80px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1f2937;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            color: #fff;
+            background: var(--btn);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button[disabled] {
+            opacity: .6;
+            cursor: default;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .result {
+            font-weight: 700;
+            margin-top: .25rem;
+            min-height: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h2>เขย่า (หรือกดปุ่ม/Space) เพื่อหมุนวงล้อ</h2>
+        <div class="pointer"></div>
+
+        <div id="wheel" class="wheel">
+            <svg id="svg" width="100%" height="100%"></svg>
+            <!-- labels จะถูกวางด้วย JS -->
+        </div>
+
+        <div class="row">
+            <button id="btnSpin">หมุนอีกครั้ง</button>
+            <button id="btnPerm">ขอสิทธิ์ Motion (iOS)</button>
+        </div>
+
+        <div id="result" class="result">—</div>
+        <div class="note">* iOS 13+ ต้องกด “ขอสิทธิ์ Motion” ก่อน และแอพเว็บควรอยู่บน HTTPS</div>
+    </div>
+
+    <script>
+        // ---------- CONFIG ----------
+        const SIZE = 320;
+        const R = SIZE / 2;
+        const MIN_TURNS = 5;
+        const MAX_TURNS = 8;
+        const SPIN_MS = 3500;
+        const EASE = "cubic-bezier(0.215, 0.61, 0.355, 1)"; // ease-out cubic
+        const POINTER_OFFSET_DEG = -90; // ศรชี้ขึ้นบน
+
+        // เปลี่ยนรายการได้ตามต้องการ
+        const OPTIONS = ["เลข 1", "เลข 2", "เลข 3", "เลข 4", "เลข 5", "เลข 6", "เลข 7", "เลข 8"];
+        const N = OPTIONS.length;
+
+        const wheel = document.getElementById("wheel");
+        const svg = document.getElementById("svg");
+        const btnSpin = document.getElementById("btnSpin");
+        const btnPerm = document.getElementById("btnPerm");
+        const resultEl = document.getElementById("result");
+
+        let spinning = false;
+        let rotationDeg = 0;
+
+        // ---------- Build wheel slices ----------
+        function buildSlices() {
+            svg.setAttribute("viewBox", `0 0 ${SIZE} ${SIZE}`);
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            const angle = (2 * Math.PI) / N;
+
+            for (let i = 0; i < N; i++) {
+                const start = i * angle;
+                const end = start + angle;
+                const x1 = R + R * Math.cos(start);
+                const y1 = R + R * Math.sin(start);
+                const x2 = R + R * Math.cos(end);
+                const y2 = R + R * Math.sin(end);
+                const largeArc = end - start > Math.PI ? 1 : 0;
+
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", `M ${R} ${R} L ${x1} ${y1} A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2} Z`);
+                path.setAttribute("fill", i % 2 === 0 ? "#ffd166" : "#fca311");
+                g.appendChild(path);
+            }
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", R); circle.setAttribute("cy", R);
+            circle.setAttribute("r", R - 2); circle.setAttribute("stroke", "#333");
+            circle.setAttribute("stroke-width", "3"); circle.setAttribute("fill", "transparent");
+            g.appendChild(circle);
+
+            svg.appendChild(g);
+
+            // วาง label รอบวง
+            for (let i = 0; i < N; i++) {
+                const theta = ((i + 0.5) * 2 * Math.PI) / N;
+                const rr = R * 0.65;
+                const x = R + rr * Math.cos(theta);
+                const y = R + rr * Math.sin(theta);
+
+                const div = document.createElement("div");
+                div.className = "label";
+                div.style.left = (x - 40) + "px";
+                div.style.top = (y - 10) + "px";
+                div.style.transform = `rotate(${(theta * 180) / Math.PI + 90}deg)`;
+                div.textContent = OPTIONS[i];
+                wheel.appendChild(div);
+            }
+        }
+
+        buildSlices();
+
+        // ---------- Helpers ----------
+        function vibrate(pattern) {
+            if (navigator.vibrate) navigator.vibrate(pattern);
+        }
+
+        function computeResult(finalDeg) {
+            let norm = finalDeg % 360;
+            if (norm < 0) norm += 360;
+            let pointing = (-norm + POINTER_OFFSET_DEG) % 360;
+            if (pointing < 0) pointing += 360;
+            const sector = 360 / N;
+            return Math.floor((pointing + sector / 2) / sector) % N;
+        }
+
+        function spin() {
+            if (spinning) return;
+            spinning = true;
+            resultEl.textContent = "กำลังหมุน...";
+
+            vibrate(60); // เริ่มหมุน
+
+            const turns = MIN_TURNS + Math.random() * (MAX_TURNS - MIN_TURNS);
+            const sectorDeg = 360 / N;
+            const targetIdx = Math.floor(Math.random() * N);
+            const centerOfSector = targetIdx * sectorDeg;
+            const jitter = (Math.random() - 0.5) * (sectorDeg * 0.2);
+
+            const totalDeg = turns * 360 + (-POINTER_OFFSET_DEG) + centerOfSector + jitter;
+
+            const start = rotationDeg;
+            const end = start + totalDeg;
+            rotationDeg = end;
+
+            // reset transition first
+            wheel.style.transition = "none";
+            wheel.style.transform = `rotate(${start}deg)`;
+            // force reflow
+            void wheel.offsetHeight;
+
+            // animate
+            wheel.style.transition = `transform ${SPIN_MS}ms ${EASE}`;
+            wheel.style.transform = `rotate(${end}deg)`;
+
+            const onEnd = () => {
+                wheel.removeEventListener("transitionend", onEnd);
+                const idx = computeResult(end);
+                resultEl.textContent = `ผลลัพธ์: ${OPTIONS[idx]}`;
+                vibrate([0, 140, 80, 180]); // หยุดหมุน
+                spinning = false;
+            };
+            wheel.addEventListener("transitionend", onEnd);
+        }
+
+        // ---------- Buttons ----------
+        btnSpin.addEventListener("click", spin);
+
+        // Spacebar = หมุน
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                e.preventDefault();
+                spin();
+            }
+        });
+
+        // ---------- Shake detection ----------
+        // ใช้ delta ของ magnitude ความเร่ง (รวมแรงโน้มถ่วง) เป็นตัวตัดสิน
+        (function setupShake() {
+            let lastMag = null;
+            let lastTime = 0;
+
+            async function ensurePermissionIOS13Plus() {
+                const DM = window.DeviceMotionEvent;
+                if (DM && typeof DM.requestPermission === "function") {
+                    try {
+                        const res = await DM.requestPermission();
+                        return res === "granted";
+                    } catch { return false; }
+                }
+                return true;
+            }
+
+            btnPerm.addEventListener("click", async () => {
+                const ok = await ensurePermissionIOS13Plus();
+                if (ok) alert("เปิดใช้ Motion ได้แล้ว ลองเขย่าเครื่องดู!");
+                else alert("เบราว์เซอร์ไม่อนุญาต Motion");
+            });
+
+            window.addEventListener("devicemotion", (e) => {
+                const acc = e.accelerationIncludingGravity || e.acceleration;
+                if (!acc) return;
+                const ax = acc.x || 0, ay = acc.y || 0, az = acc.z || 0;
+                const mag = Math.sqrt(ax * ax + ay * ay + az * az);
+
+                const now = performance.now();
+                if (lastMag != null) {
+                    const delta = Math.abs(mag - lastMag);
+                    // ปรับ threshold ได้ (5~8 คือปกติดีบนมือถือทั่วไป)
+                    if (delta > 6 && now - lastTime > 800) {
+                        lastTime = now;
+                        spin();
+                    }
+                }
+                lastMag = mag;
+            }, { passive: true });
+        })();
     </script>
 </body>
 
